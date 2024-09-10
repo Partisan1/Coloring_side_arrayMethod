@@ -27,7 +27,8 @@ const makeBoxes = () => {
         {number: 14},
         {number:15}
     ];
-    const content = data.map()
+    const content = data.map(({number}) => `<div id ="${number}" class = "box">${number}</div>`);
+    return content
 }
 //A négyzetek megjelenítése a html-ben:
 const renderBoxes = () => {
@@ -45,14 +46,80 @@ const renderBoxes = () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     renderBoxes();
+    coloring();
     const boxes = document.querySelectorAll(".box")
     console.log(boxes)
 })
 
+function clearInput() {
+    const inputElement = document.querySelector("#num");
+    inputElement.value = "";
+    inputElement.focus();
+}
+const reset = () => {
+    const resetButton = document.querySelector(".card :nth-child(4)");
+    resetButton.addEventListener("click", () => {
+        renderBoxes();
+        clearInput();
+    })
+}
 //Tennivalók: 
 // 1. Kivenni az input mező értékét
+const getInputValue = function() {
+    return document.querySelector("#num").value
+}
 // 2. Megfelelő-e az érték (nem üres, nem szting, 1 és 15 között van)
+const checkValue = () => {
+    const value = getInputValue();
+    if (!value.trim()){
+        return [false, 0];
+    }
+    if(isNaN(value)){
+        return [false, 0];
+    }
+    const CurrentValue = Number(value)
+    if(CurrentValue < 1 || CurrentValue > 15) {
+        return [false,0];
+    }
+    return [true, ,CurrentValue];
+}
 // 3. A színező gombra eseményfigyelőt helyezni
 // 4. Véletlen szám-generátor
+const randomNumber = () => {
+    return Math.floor(Math.random()*256);
+}
 // 5. Számokból színt készíteni
+const createColor = () => {
+    const r = randomNumber()
+    const g = randomNumber()
+    const b = randomNumber()
+    return [r,g,b]
+}
+
+// Színezés végrehajtása:
+const coloringBox = () => {
+    const [isValid, number] = checkValue();
+    if(!isValid){
+        sendErrorMessage();
+        return;
+    }
+    const boxes = document.querySelector(".box");
+    const box = Array.from(boxes).find(b => b.id === number)
+    const [r,g,b] = createColor();
+    box.style.backgroundColor = `rgb(${r},${g},${b})`
+}
+ 
+function sendErrorMessage() {
+    alert("Helytelen értéket adott meg")
+}
+
+//Színező gomb működtetése:
+const coloring = () => {
+    const button = document.querySelector(".card button:nth-child(3)");
+    button.addEventListener("click", () => {
+        coloringBox();
+        clearInput();
+    });
+    
+}
 // 6. 3. feladat színező eljárásában alkalmazni ezt a színt
